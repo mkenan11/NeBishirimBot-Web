@@ -1,7 +1,8 @@
 /** Brauzer tərəfi: bütün sorğular eyni domendəki /api proxy-sinə gedir. */
 
 export type PantryItem = { id: number; name: string };
-export type Pantry = { items: PantryItem[] };
+/** suggestions: botun «Tez əlavə et» siyahısından hələ olmayanlar (köhnə backend-də olmaya bilər). */
+export type Pantry = { items: PantryItem[]; suggestions?: string[] };
 
 export type TextResult = Pantry & {
   added: string[];

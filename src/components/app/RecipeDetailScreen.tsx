@@ -6,7 +6,8 @@ import { ChevronLeft, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { api, ApiError, parseRecipeSlug, type DetailResponse } from "@/lib/api";
 import { RecipeView } from "./RecipeView";
-import { Button, Notice, Thinking } from "./ui";
+import { AiWaiting } from "./AiWaiting";
+import { Button, Notice } from "./ui";
 
 type Phase =
   | { kind: "loading" }
@@ -66,7 +67,7 @@ export function RecipeDetailScreen() {
         Reseptlər
       </Link>
 
-      {phase.kind === "loading" && <Thinking label="Ətraflı resept hazırlanır..." />}
+      {phase.kind === "loading" && <AiWaiting kind="recipe" cards={4} />}
 
       {phase.kind === "error" && (
         <Notice tone="error">
@@ -101,7 +102,7 @@ function MeatChoice({ onChoose }: { onChoose: (species: "beef" | "lamb") => void
   const [unknown, setUnknown] = useState(false);
 
   return (
-    <div className="rounded-3xl bg-white p-5 ring-1 ring-forest-900/10">
+    <div className="rounded-3xl border border-forest-900/15 bg-white p-5 shadow-card">
       <p className="text-lg font-semibold text-forest-900">Siyahındakı «Ət» hansı növdür?</p>
       <p className="mt-1 text-[15px] text-muted">Resepti düzgün miqdar və vaxtla hazırlamaq üçün lazımdır.</p>
       <div className="mt-4 flex flex-wrap gap-2">

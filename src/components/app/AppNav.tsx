@@ -58,7 +58,7 @@ function NavList({ variant, pathname }: { variant: Variant; pathname: string }) 
   return (
     <nav
       aria-label="Web app menyusu"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-forest-900/10 bg-cream/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-forest-900/15 bg-white/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_20px_-12px_rgb(15_36_25/0.35)] backdrop-blur-sm md:hidden"
     >
       <ul className="mx-auto grid max-w-md grid-cols-4">
         {tabs.map(({ href, label, icon: Icon, match }) => {

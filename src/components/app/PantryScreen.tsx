@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Camera, Check, Pencil, Trash2, UtensilsCrossed, X } from "lucide-react";
+import { ArrowUp, Camera, Check, Plus, UtensilsCrossed, X } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
-import { api, ApiError, type PantryItem, type TextResult } from "@/lib/api";
-import { Button, Notice, ScreenTitle } from "./ui";
+import { api, ApiError, type Pantry, type PantryItem, type TextResult } from "@/lib/api";
+import { Button, Notice, ScreenTitle, Stat } from "./ui";
 
 type Message = { tone: "info" | "error" | "success"; lines: string[] };
 
@@ -19,7 +19,7 @@ function summarize(result: TextResult): string[] {
 }
 
 export function PantryScreen() {
-  const [items, setItems] = useState<PantryItem[] | null>(null);
+  const [pantry, setPantry] = useState<Pantry | null>(null);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<Message | null>(null);
@@ -31,9 +31,9 @@ export function PantryScreen() {
   useEffect(() => {
     api
       .pantry()
-      .then((data) => setItems(data.items))
+      .then(setPantry)
       .catch((error: ApiError) => {
-        setItems([]);
+        setPantry({ items: [] });
         setMessage({ tone: "error", lines: [error.message] });
       });
   }, []);
@@ -55,7 +55,7 @@ export function PantryScreen() {
     setUndo(null);
     const result = await run("add", () => api.addText(text));
     if (!result) return;
-    setItems(result.items);
+    setPantry(result);
     setText("");
     const lines = summarize(result);
     if (result.unknown.length) {
@@ -66,13 +66,21 @@ export function PantryScreen() {
     setMessage(lines.length ? { tone: result.added.length ? "success" : "info", lines } : null);
   }
 
+  async function quickAdd(name: string) {
+    setUndo(null);
+    const result = await run(`quick-${name}`, () => api.addNames([name]));
+    if (!result) return;
+    setPantry(result);
+    setMessage(null);
+  }
+
   async function confirmPending() {
     if (!pending) return;
     const names = pending.names.filter((name) => pending.selected.has(name));
     if (names.length) {
       const result = await run("confirm", () => api.addNames(names));
       if (!result) return;
-      setItems(result.items);
+      setPantry(result);
       setMessage({ tone: "success", lines: [`Əlavə olundu: ${names.join(", ")}`] });
     }
     setPending(null);
@@ -83,7 +91,7 @@ export function PantryScreen() {
     if (!editing) return;
     const result = await run(`rename-${editing.id}`, () => api.rename(editing.id, editing.name));
     if (!result) return;
-    setItems(result.items);
+    setPantry(result);
     setEditing(null);
     setMessage(null);
   }
@@ -91,7 +99,7 @@ export function PantryScreen() {
   async function remove(item: PantryItem) {
     const result = await run(`remove-${item.id}`, () => api.remove(item.id));
     if (!result) return;
-    setItems(result.items);
+    setPantry(result);
     setUndo(`«${item.name}» silindi.`);
     setMessage(null);
   }
@@ -100,54 +108,89 @@ export function PantryScreen() {
     const result = await run("clear", () => api.clear());
     setConfirmClear(false);
     if (!result) return;
-    setItems(result.items);
+    setPantry(result);
     setUndo(`${result.removed} ərzaq silindi.`);
   }
 
   async function restore() {
     const result = await run("undo", () => api.undo());
     setUndo(null);
-    if (result) setItems(result.items);
+    if (result) setPantry(result);
   }
 
+  const items = pantry?.items ?? null;
   const count = items?.length ?? 0;
+  const suggestions = pantry?.suggestions ?? [];
 
   return (
     <>
       <ScreenTitle
         title="Ərzaqlarım"
-        subtitle="Evdə olanları yaz — sonra «Nə bişirim?» ilə uyğun reseptləri tap."
+        subtitle="Evdə olanları əlavə et, sonra resept tap."
+        aside={items && <Stat value={count} label="ərzaq" />}
       />
 
-      <form onSubmit={addText} className="rounded-3xl bg-white p-4 ring-1 ring-forest-900/10 sm:p-5">
-        <label htmlFor="ingredients" className="text-sm font-semibold text-forest-900">
+      {/* Telegram-dakı kimi tək giriş sətri: yaz, Enter bas və ya şəkil çək. */}
+      <form
+        onSubmit={addText}
+        className="flex items-center gap-1.5 rounded-full border border-forest-900/20 bg-white p-1.5 pl-4 shadow-card focus-within:border-forest-700 focus-within:ring-2 focus-within:ring-forest-700/20"
+      >
+        <label htmlFor="ingredients" className="sr-only">
           Ərzaq əlavə et
         </label>
-        <textarea
+        <input
           id="ingredients"
           value={text}
           onChange={(event) => setText(event.target.value)}
-          rows={2}
           maxLength={1500}
-          placeholder="Kartof, yumurta, soğan"
-          className="mt-2 w-full resize-none rounded-2xl bg-cream px-4 py-3 text-[16px] text-ink ring-1 ring-forest-900/10 outline-none placeholder:text-muted/70 focus:ring-2 focus:ring-forest-700"
+          enterKeyHint="send"
+          autoComplete="off"
+          placeholder="Kartof, yumurta, soğan…"
+          className="min-w-0 flex-1 bg-transparent py-2 text-[16px] text-ink outline-none placeholder:text-muted/70"
         />
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <Button type="submit" busy={busy === "add"} disabled={!text.trim()}>
-            Əlavə et
-          </Button>
-          <Link
-            href="/app/photo"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-semibold text-forest-800 hover:bg-forest-900/5"
-          >
-            <Camera className="size-4" aria-hidden />
-            Şəkildən əlavə et
-          </Link>
-        </div>
-        <p className="mt-2 text-xs text-muted">Vergül və ya yeni sətirlə ayır. Bir dəfəyə ən çox 30 ərzaq.</p>
+        <Link
+          href="/app/photo"
+          aria-label="Şəkildən əlavə et"
+          title="Şəkildən əlavə et"
+          className="grid size-10 shrink-0 place-items-center rounded-full text-forest-800 hover:bg-forest-900/5"
+        >
+          <Camera className="size-5" aria-hidden />
+        </Link>
+        <button
+          type="submit"
+          aria-label="Əlavə et"
+          disabled={!text.trim() || busy === "add"}
+          className="grid size-10 shrink-0 place-items-center rounded-full bg-forest-800 text-cream transition-colors hover:bg-forest-700 disabled:bg-forest-800/35"
+        >
+          <ArrowUp className="size-5" aria-hidden />
+        </button>
       </form>
+      <p className="mt-2 px-4 text-xs text-muted">Vergüllə ayır — hərf səhvlərini özümüz düzəldirik.</p>
 
-      <div className="mt-4 space-y-3" aria-live="polite">
+      {suggestions.length > 0 && (
+        <section aria-labelledby="quick-title" className="mt-5">
+          <h2 id="quick-title" className="mb-2 font-sans text-sm font-semibold tracking-normal text-forest-900">
+            Tez əlavə et
+          </h2>
+          <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+            {suggestions.map((name) => (
+              <li key={name} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => quickAdd(name)}
+                  disabled={busy === `quick-${name}`}
+                  className="inline-flex min-h-9 items-center gap-1 rounded-full border border-dashed border-forest-900/30 bg-white/60 px-3 text-sm font-medium text-forest-800 transition-colors hover:border-solid hover:border-forest-800 hover:bg-white disabled:opacity-50"
+                >
+                  <Plus className="size-3.5" aria-hidden />
+                  {name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <div className="mt-4 space-y-3 empty:hidden" aria-live="polite">
         {message && (
           <Notice tone={message.tone}>
             {message.lines.map((line) => (
@@ -157,7 +200,7 @@ export function PantryScreen() {
         )}
 
         {pending && (
-          <div className="rounded-3xl bg-beige p-4 sm:p-5">
+          <div className="rounded-3xl border border-forest-900/15 bg-beige p-4 sm:p-5">
             <p className="font-semibold text-forest-900">Bu adları tanımadım. Yenə də əlavə edilsin?</p>
             <ul className="mt-3 flex flex-wrap gap-2">
               {pending.names.map((name) => {
@@ -174,7 +217,7 @@ export function PantryScreen() {
                         setPending({ ...pending, selected });
                       }}
                       className={`inline-flex min-h-10 items-center gap-1.5 rounded-full px-4 text-sm font-medium ${
-                        checked ? "bg-forest-800 text-cream" : "bg-cream text-muted line-through ring-1 ring-forest-900/15"
+                        checked ? "bg-forest-800 text-cream" : "border border-forest-900/20 bg-cream text-muted line-through"
                       }`}
                     >
                       {checked && <Check className="size-4" aria-hidden />}
@@ -210,108 +253,124 @@ export function PantryScreen() {
         )}
       </div>
 
-      <section aria-labelledby="pantry-list" className="mt-8">
-        <div className="flex items-baseline justify-between">
-          <h2 id="pantry-list" className="font-sans text-lg font-semibold tracking-normal text-forest-900">
-            Siyahı {items && <span className="font-normal text-muted">({count})</span>}
+      <section aria-labelledby="pantry-list" className="mt-7">
+        <div className="flex min-h-9 items-center justify-between">
+          <h2 id="pantry-list" className="font-sans text-sm font-semibold tracking-normal text-forest-900">
+            Siyahım
           </h2>
           {count > 0 &&
             (confirmClear ? (
               <span className="flex items-center gap-1">
                 <Button variant="danger" className="min-h-9! px-3! text-sm!" onClick={clearAll} busy={busy === "clear"}>
-                  Bəli, hamısını sil
+                  Hamısını sil
                 </Button>
                 <Button variant="ghost" className="min-h-9! px-3! text-sm!" onClick={() => setConfirmClear(false)}>
                   Ləğv et
                 </Button>
               </span>
             ) : (
-              <Button variant="ghost" className="min-h-9! px-3! text-sm!" onClick={() => setConfirmClear(true)}>
+              <button
+                type="button"
+                onClick={() => setConfirmClear(true)}
+                className="min-h-9 rounded-full px-3 text-sm font-medium text-muted hover:text-[#a3261a]"
+              >
                 Hamısını sil
-              </Button>
+              </button>
             ))}
         </div>
 
         {items === null ? (
-          <ul className="mt-3 space-y-2" aria-hidden>
-            {[0, 1, 2].map((n) => (
-              <li key={n} className="h-12 animate-pulse rounded-2xl bg-forest-900/5" />
+          <div className="mt-2 flex flex-wrap gap-2" aria-hidden>
+            {[72, 96, 64, 88, 80].map((w) => (
+              <span key={w} className="h-10 animate-pulse rounded-full bg-forest-900/8" style={{ width: w }} />
             ))}
-          </ul>
+          </div>
         ) : count === 0 ? (
-          <p className="mt-3 rounded-2xl border border-dashed border-forest-900/20 px-4 py-6 text-center text-muted">
-            Siyahın boşdur. Yuxarıda ərzaqlarını yaz və ya şəklini göndər.
+          <p className="mt-2 rounded-3xl border-2 border-dashed border-forest-900/25 bg-white/60 px-4 py-8 text-center text-muted">
+            Siyahın boşdur. Yuxarıda yaz, şəkil çək və ya «Tez əlavə et»-dən seç.
           </p>
         ) : (
-          <ul className="mt-3 divide-y divide-forest-900/8 rounded-3xl bg-white ring-1 ring-forest-900/10">
-            {items.map((item) => (
-              <li key={item.id} className="flex min-h-14 items-center gap-2 px-4 py-1.5">
-                {editing?.id === item.id ? (
-                  <form onSubmit={saveRename} className="flex flex-1 items-center gap-1">
-                    <label htmlFor={`rename-${item.id}`} className="sr-only">
-                      {item.name} üçün yeni ad
-                    </label>
-                    <input
-                      id={`rename-${item.id}`}
-                      autoFocus
-                      value={editing.name}
-                      maxLength={50}
-                      onChange={(event) => setEditing({ id: item.id, name: event.target.value })}
-                      className="min-h-10 flex-1 rounded-xl bg-cream px-3 text-[16px] ring-1 ring-forest-900/15 outline-none focus:ring-2 focus:ring-forest-700"
-                    />
-                    <button
-                      type="submit"
-                      aria-label="Yadda saxla"
-                      disabled={busy === `rename-${item.id}`}
-                      className="grid size-10 place-items-center rounded-full text-forest-800 hover:bg-forest-900/5"
+          <>
+            <ul className="mt-2 flex flex-wrap gap-2">
+              {items.map((item) =>
+                editing?.id === item.id ? (
+                  <li key={item.id}>
+                    <form
+                      onSubmit={saveRename}
+                      className="inline-flex items-center gap-0.5 rounded-full border-2 border-forest-700 bg-white py-0.5 pr-0.5 pl-3"
                     >
-                      <Check className="size-5" aria-hidden />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="Ləğv et"
-                      onClick={() => setEditing(null)}
-                      className="grid size-10 place-items-center rounded-full text-muted hover:bg-forest-900/5"
-                    >
-                      <X className="size-5" aria-hidden />
-                    </button>
-                  </form>
+                      <label htmlFor={`rename-${item.id}`} className="sr-only">
+                        {item.name} üçün yeni ad
+                      </label>
+                      <input
+                        id={`rename-${item.id}`}
+                        autoFocus
+                        value={editing.name}
+                        maxLength={50}
+                        size={Math.max(6, editing.name.length)}
+                        onChange={(event) => setEditing({ id: item.id, name: event.target.value })}
+                        onKeyDown={(event) => event.key === "Escape" && setEditing(null)}
+                        className="bg-transparent text-[16px] outline-none"
+                      />
+                      <button
+                        type="submit"
+                        aria-label="Yadda saxla"
+                        disabled={busy === `rename-${item.id}`}
+                        className="grid size-8 place-items-center rounded-full bg-forest-800 text-cream"
+                      >
+                        <Check className="size-4" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Ləğv et"
+                        onClick={() => setEditing(null)}
+                        className="grid size-8 place-items-center rounded-full text-muted hover:bg-forest-900/5"
+                      >
+                        <X className="size-4" aria-hidden />
+                      </button>
+                    </form>
+                  </li>
                 ) : (
-                  <>
-                    <span className="flex-1 text-[16px] text-ink">{item.name}</span>
+                  <li
+                    key={item.id}
+                    className="inline-flex items-center rounded-full border border-forest-900/15 bg-white shadow-card"
+                  >
                     <button
                       type="button"
+                      title="Adını dəyiş"
                       aria-label={`${item.name} — adını dəyiş`}
                       onClick={() => setEditing({ id: item.id, name: item.name })}
-                      className="grid size-10 place-items-center rounded-full text-muted hover:bg-forest-900/5 hover:text-forest-900"
+                      className="min-h-10 rounded-l-full py-1.5 pr-1 pl-3.5 text-[15px] text-ink hover:text-forest-700"
                     >
-                      <Pencil className="size-4" aria-hidden />
+                      {item.name}
                     </button>
                     <button
                       type="button"
                       aria-label={`${item.name} — sil`}
                       onClick={() => remove(item)}
                       disabled={busy === `remove-${item.id}`}
-                      className="grid size-10 place-items-center rounded-full text-muted hover:bg-[#a3261a]/8 hover:text-[#a3261a]"
+                      className="grid size-9 place-items-center rounded-full text-muted hover:bg-[#a3261a]/8 hover:text-[#a3261a]"
                     >
-                      <Trash2 className="size-4" aria-hidden />
+                      <X className="size-4" aria-hidden />
                     </button>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
+                  </li>
+                ),
+              )}
+            </ul>
+            <p className="mt-3 text-xs text-muted">Adı dəyişmək üçün ərzağa toxun.</p>
+          </>
         )}
       </section>
 
       {count > 0 && (
-        <div className="sticky bottom-24 mt-6 md:bottom-6">
+        <div className="sticky bottom-24 mt-8 md:bottom-6">
           <Link
             href="/app/recipes?start=1"
-            className="flex min-h-13 items-center justify-center gap-2 rounded-full bg-forest-800 font-semibold text-cream shadow-lg shadow-forest-950/20 hover:bg-forest-700"
+            className="flex min-h-14 items-center justify-center gap-2 rounded-full bg-orange-500 font-semibold text-forest-950 shadow-lg shadow-forest-950/25 transition-colors hover:bg-orange-600"
           >
             <UtensilsCrossed className="size-5" aria-hidden />
             Nə bişirim?
+            <span className="rounded-full bg-forest-950/10 px-2 py-0.5 text-sm">{count} ərzaq</span>
           </Link>
         </div>
       )}

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Camera, ImageUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { api, ApiError } from "@/lib/api";
-import { Button, Notice, ScreenTitle, Thinking } from "./ui";
+import { AiWaiting } from "./AiWaiting";
+import { Button, Notice, ScreenTitle } from "./ui";
 
 const MAX_SIDE = 1600;
 
@@ -110,7 +111,7 @@ export function PhotoScreen() {
       {phase === "idle" || phase === "done" ? (
         <label
           htmlFor="photo-input"
-          className="flex cursor-pointer flex-col items-center gap-3 rounded-3xl border-2 border-dashed border-forest-900/20 bg-white px-6 py-10 text-center transition-colors hover:border-forest-700 focus-within:border-forest-700"
+          className="flex cursor-pointer flex-col items-center gap-3 rounded-3xl border-2 border-dashed border-forest-900/35 bg-white shadow-card px-6 py-10 text-center transition-colors hover:border-forest-700 focus-within:border-forest-700"
         >
           <span className="grid size-14 place-items-center rounded-full bg-sage text-forest-800">
             <Camera className="size-7" aria-hidden />
@@ -138,10 +139,10 @@ export function PhotoScreen() {
           <img src={preview} alt="Seçdiyin şəkil" className="max-h-64 w-full rounded-3xl object-cover" />
         )}
 
-        {phase === "analyzing" && <Thinking label="Şəkildəki ərzaqları analiz edirəm..." />}
+        {phase === "analyzing" && <AiWaiting kind="photo" cards={2} />}
 
         {(phase === "review" || phase === "saving") && (
-          <div className="rounded-3xl bg-white p-4 ring-1 ring-forest-900/10 sm:p-5">
+          <div className="rounded-3xl border border-forest-900/15 bg-white p-4 shadow-card sm:p-5">
             <p className="font-semibold text-forest-900">Tanınan ərzaqlar</p>
             <p className="mt-1 text-sm text-muted">
               Lazım olmayanın işarəsini götür, adı səhvdirsə düzəlt. Sən təsdiqləməyincə heç nə əlavə olunmur.
@@ -164,7 +165,7 @@ export function PhotoScreen() {
                     value={row.name}
                     maxLength={50}
                     onChange={(event) => setRows(rows.map((r, j) => (j === i ? { ...r, name: event.target.value } : r)))}
-                    className={`min-h-11 flex-1 rounded-xl bg-cream px-3 text-[16px] ring-1 ring-forest-900/10 outline-none focus:ring-2 focus:ring-forest-700 ${
+                    className={`min-h-11 flex-1 rounded-xl bg-cream px-3 text-[16px] border border-forest-900/25 outline-none focus:border-forest-700 focus:ring-2 focus:ring-forest-700/25 ${
                       row.selected ? "" : "text-muted line-through"
                     }`}
                   />

@@ -46,20 +46,3 @@ export function SectionHeading({ id, eyebrow, title, intro, align = "left" }: He
     </div>
   );
 }
-
-/** Qısa, yoxlanmış məhsul faktları üçün sadə siyahı. */
-export function PointList({ items }: { items: { title: string; text: string }[] }) {
-  return (
-    <ul className="mt-8 space-y-5">
-      {items.map((item) => (
-        <li key={item.title} className="flex gap-4">
-          <span aria-hidden className="mt-2 size-2.5 shrink-0 rounded-full bg-orange-500" />
-          <div>
-            <p className="font-semibold text-forest-900">{item.title}</p>
-            <p className="mt-0.5 leading-relaxed text-muted">{item.text}</p>
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-}

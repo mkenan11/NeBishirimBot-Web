@@ -16,7 +16,7 @@ export function Footer() {
             <span className="text-lg">{site.name}</span>
           </Link>
           <p className="mt-4 max-w-xs text-[15px] leading-relaxed">
-            Evdəki ərzaqlara uyğun resept tapmağa kömək edən, Azərbaycan dilində işləyən Telegram botu.
+            Evdəki ərzaqlara uyğun resept tapan AI köməkçi — brauzerdə və Telegram-da, Azərbaycan dilində.
           </p>
         </div>
 

@@ -1,46 +1,45 @@
-import type { ScreenshotKey } from "@/content/site";
-import { Screenshot } from "../Screenshot";
+import { ChefHat, ShoppingBasket, SlidersHorizontal } from "lucide-react";
 import { Section, SectionHeading } from "../Section";
 
-const steps: { title: string; text: string; shot: ScreenshotKey }[] = [
+const steps = [
   {
+    icon: ShoppingBasket,
     title: "Ərzaqlarını əlavə et",
-    text: "Evdə olanları vergüllə yaz, şəklini göndər və ya hazır siyahıdan seç. Siyahını istədiyin vaxt redaktə edə bilərsən.",
-    shot: "ingredients",
+    text: "Yaz, şəklini çək və ya hazır siyahıdan bir toxunuşla seç. Hərf səhvlərini özümüz düzəldirik.",
   },
   {
+    icon: SlidersHorizontal,
     title: "Seçimlərini et",
-    text: "Hazırlanma vaxtını (≤45 və ya 46–90 dəqiqə) və neçə nəfər üçün bişirəcəyini seç: 1, 2 və ya 4.",
-    shot: "stepFilters",
+    text: "Yalnız evdəkilərlə, yoxsa 1–2 əlavə ərzaqla? Hazırlanma vaxtı və neçə nəfər üçün?",
   },
   {
-    title: "Reseptini seç",
-    text: "Uyğun reseptlərə bax, çatışmayan ərzaqları gör və bəyəndiyini açıb addım-addım hazırla.",
-    shot: "stepRecipe",
+    icon: ChefHat,
+    title: "Bişirməyə başla",
+    text: "Miqdarları, çatışmayan ərzaqları və addımları gör. Bəyəndiyini seçilmişlərə saxla.",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <Section id="nece-isleyir" labelledBy="how-title">
+    <Section id="nece-isleyir" labelledBy="how-title" className="border-y border-forest-900/10" tone="beige">
       <SectionHeading id="how-title" eyebrow="Necə işləyir?" title="Üç addımda hazır resept" align="center" />
 
-      <ol className="mt-14 grid gap-14 md:grid-cols-3 md:gap-8">
-        {steps.map((step, i) => (
-          <li key={step.title} className="flex flex-col">
-            <div className="flex items-baseline gap-3">
-              <span className="font-display text-5xl leading-none font-semibold text-orange-500" aria-hidden>
+      <ol className="relative mt-12 grid gap-4 md:grid-cols-3 md:gap-6">
+        {steps.map(({ icon: Icon, title, text }, i) => (
+          <li key={title} className="relative rounded-3xl border border-forest-900/12 bg-cream p-6 shadow-card">
+            <div className="flex items-center justify-between">
+              <span className="grid size-12 place-items-center rounded-2xl bg-forest-800 text-cream">
+                <Icon className="size-6" aria-hidden />
+              </span>
+              <span className="font-display text-5xl leading-none font-semibold text-orange-500/80" aria-hidden>
                 {i + 1}
               </span>
-              <h3 className="text-2xl font-semibold text-forest-900">
-                <span className="sr-only">Addım {i + 1}: </span>
-                {step.title}
-              </h3>
             </div>
-            <p className="mt-3 mb-7 leading-relaxed text-muted">{step.text}</p>
-            <div className="flex flex-1 items-start justify-center rounded-[28px] bg-sage p-4 sm:p-6">
-              <Screenshot shot={step.shot} sizes="(max-width: 768px) 88vw, 330px" />
-            </div>
+            <h3 className="mt-5 text-xl font-semibold text-forest-900">
+              <span className="sr-only">Addım {i + 1}: </span>
+              {title}
+            </h3>
+            <p className="mt-2 leading-relaxed text-muted">{text}</p>
           </li>
         ))}
       </ol>

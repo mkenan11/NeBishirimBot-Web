@@ -33,48 +33,33 @@ export const nav = [
 ] as const;
 
 /**
- * Real Telegram screenshot-ları `public/screenshots/` qovluğunda bu adlarla saxlanılır
- * (.png, .jpg və ya .webp). Fayl yoxdursa, səhifədə neytral yer tutucu görünür.
+ * NeBishirimBot web app-in real ekran görüntüləri (`public/screenshots/`, 390px telefon ekranı, 2x).
+ * Fayl yoxdursa, səhifədə neytral yer tutucu görünür.
  */
 export const screenshots = {
   ingredients: {
-    file: "ingredients",
-    alt: "Telegram-da «Ərzaqlarım» siyahısı: su, un, makaron, kartof, soğan və digər ərzaqlar, altında Nə bişirim?, Əlavə et və Tez əlavə et düymələri",
+    file: "ui-ingredients",
+    alt: "NeBishirimBot web app-də «Ərzaqlarım» ekranı: ərzaq əlavə etmə sahəsi və 14 ərzaqlıq siyahı",
     label: "Ərzaqlarım",
   },
   photo: {
-    file: "photo",
-    alt: "İstifadəçinin göndərdiyi ərzaq şəkli və botun cavabı: şəkildən tanınıb siyahıya əlavə olunan ərzaqlar",
+    file: "ui-photo",
+    alt: "Şəkildən tanıma ekranı: yüklənmiş ərzaq şəkli və təsdiq üçün tanınan ərzaqların siyahısı",
     label: "Şəkildən tanıma",
   },
-  filters: {
-    file: "filters",
-    alt: "Resept siyahısının altında rejim, hazırlanma vaxtı (Hamısı, ≤45 dəq, 46–90 dəq) və nəfər sayı (1, 2, 4) düymələri",
-    label: "Vaxt və nəfər seçimi",
-  },
   recipes: {
-    file: "recipes",
-    alt: "«Nə bişirim?» cavabı: yalnız evdəkilərlə, əlavə 1 və 2 ərzaqla hazırlanan 5 resept, hazırlanma vaxtı və çatışmayan ərzaqlar",
+    file: "ui-recipes",
+    alt: "«Nə bişirim?» ekranı: rejim, hazırlanma vaxtı və nəfər sayı seçimləri, evdəki ərzaqlara uyğun reseptlər",
     label: "Resept təklifləri",
   },
   recipeDetail: {
-    file: "recipe-detail",
-    alt: "Lobya qovurması resepti: 2 nəfərlik ərzaq miqdarları, ümumi vaxt və 7 addımlı hazırlanma qaydası",
+    file: "ui-recipe-detail",
+    alt: "Pomidor Yumurta resepti: 2 nəfərlik, 15 dəqiqə, ərzaq miqdarları və «Seçilmişlərə əlavə et» düyməsi",
     label: "Resept detalları",
   },
-  stepFilters: {
-    file: "step-filters",
-    alt: "Rejim düymələri (Bütün təkliflər, Yalnız evdəkilərlə, Əlavə 1–2 ərzaqla), vaxt və nəfər sayı seçimləri",
-    label: "Vaxt və nəfər seçimi",
-  },
-  stepRecipe: {
-    file: "step-recipe",
-    alt: "Lobya qovurması resepti: lazım olan ərzaqlar və miqdarları",
-    label: "Resept",
-  },
   favorites: {
-    file: "favorites",
-    alt: "«Seçilmiş reseptlər» bölməsi: 8 saxlanmış resept, hər biri hazırlanma vaxtı və nəfər sayı ilə",
+    file: "ui-favorites",
+    alt: "«Seçilmiş reseptlər» ekranı: 4 saxlanmış resept, hazırlanma vaxtı və nəfər sayı ilə",
     label: "Seçilmiş reseptlər",
   },
 } as const;

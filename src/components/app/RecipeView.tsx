@@ -1,6 +1,8 @@
 import { CirclePlay, Clock, Flame, ShoppingBasket, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import type { RecipeDetail } from "@/lib/api";
+import { CookingSteps } from "./CookingSteps";
+import { ScreenTitle } from "./ui";
 
 /** Tam reseptin görünüşü: həm axtarışdan, həm seçilmişlərdən açılanda eynidir. */
 export function RecipeView({ recipe, actions }: { recipe: RecipeDetail; actions?: ReactNode }) {
@@ -10,32 +12,37 @@ export function RecipeView({ recipe, actions }: { recipe: RecipeDetail; actions?
 
   return (
     <article>
-      <h1 className="text-[2rem] leading-tight font-semibold text-forest-900">{recipe.name}</h1>
+      <ScreenTitle
+        title={recipe.name}
+        subtitle={
+          <>
+            <span className="flex flex-wrap gap-x-4 gap-y-1.5 text-cream">
+              <span className="inline-flex items-center gap-1.5">
+                <Users className="size-4 text-orange-500" aria-hidden />
+                {recipe.servings} nəfərlik
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="size-4 text-orange-500" aria-hidden />
+                {recipe.total} dəq
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Flame className="size-4 text-orange-500" aria-hidden />
+                {recipe.method}
+              </span>
+            </span>
+            <span className="mt-1.5 block text-sm">Vaxt: {time.join(" + ")} dəq</span>
+          </>
+        }
+      />
 
-      <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[15px] text-muted">
-        <li className="inline-flex items-center gap-1.5">
-          <Users className="size-4 text-forest-700" aria-hidden />
-          {recipe.servings} nəfərlik
-        </li>
-        <li className="inline-flex items-center gap-1.5">
-          <Clock className="size-4 text-forest-700" aria-hidden />
-          {recipe.total} dəq
-        </li>
-        <li className="inline-flex items-center gap-1.5">
-          <Flame className="size-4 text-forest-700" aria-hidden />
-          {recipe.method}
-        </li>
-      </ul>
-      <p className="mt-1.5 text-sm text-muted">Vaxt: {time.join(" + ")} dəq</p>
-
-      {actions && <div className="mt-5 flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
 
       <section aria-labelledby="ingredients-title" className="mt-8">
         <h2 id="ingredients-title" className="text-xl font-semibold text-forest-900">
           Lazım olan ərzaqlar
         </h2>
         <p className="mt-1 text-sm text-muted">Miqdarlar təxminidir.</p>
-        <ul className="mt-3 divide-y divide-forest-900/8 rounded-3xl bg-white ring-1 ring-forest-900/10">
+        <ul className="mt-3 divide-y divide-forest-900/8 rounded-3xl border border-forest-900/15 bg-white shadow-card">
           {recipe.ingredients.map((item) => (
             <li key={item.name} className="flex items-baseline justify-between gap-4 px-4 py-3">
               <span className={missing.has(item.name) ? "font-medium text-orange-ink" : "text-ink"}>
@@ -56,21 +63,7 @@ export function RecipeView({ recipe, actions }: { recipe: RecipeDetail; actions?
         )}
       </section>
 
-      <section aria-labelledby="steps-title" className="mt-8">
-        <h2 id="steps-title" className="text-xl font-semibold text-forest-900">
-          Hazırlanması
-        </h2>
-        <ol className="mt-3 space-y-3">
-          {recipe.steps.map((step, i) => (
-            <li key={i} className="flex gap-3">
-              <span className="grid size-7 shrink-0 place-items-center rounded-full bg-forest-800 text-sm font-semibold text-cream">
-                {i + 1}
-              </span>
-              <p className="pt-0.5 leading-relaxed text-ink">{step}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <CookingSteps steps={recipe.steps} />
 
       {recipe.note && (
         <p className="mt-6 rounded-2xl bg-sage px-4 py-3 leading-relaxed text-forest-900">💡 {recipe.note}</p>

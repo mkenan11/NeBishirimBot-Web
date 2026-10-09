@@ -1,11 +1,38 @@
 import { LoaderCircle } from "lucide-react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { LeafShape } from "../icons";
 
-export function ScreenTitle({ title, subtitle }: { title: string; subtitle?: ReactNode }) {
+/** App ekranının kompakt yaşıl başlığı: brend rəngi var, amma əsas işi aşağı itələmir. */
+export function ScreenTitle({
+  title,
+  subtitle,
+  aside,
+}: {
+  title: ReactNode;
+  subtitle?: ReactNode;
+  /** Sağ tərəfdə kiçik göstərici (məs. ərzaq sayı). */
+  aside?: ReactNode;
+}) {
   return (
-    <div className="mb-6">
-      <h1 className="text-[1.9rem] leading-tight font-semibold text-forest-900">{title}</h1>
-      {subtitle && <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{subtitle}</p>}
+    <div className="relative mb-5 overflow-hidden rounded-3xl bg-forest-800 px-5 py-4 text-cream shadow-card sm:px-6 sm:py-5">
+      <LeafShape aria-hidden className="absolute -right-4 -bottom-7 size-24 text-forest-700" />
+      <div className="relative flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-[1.6rem] leading-tight font-semibold text-cream sm:text-[1.9rem]">{title}</h1>
+          {subtitle && <div className="mt-1 text-sm leading-relaxed text-cream/80">{subtitle}</div>}
+        </div>
+        {aside}
+      </div>
+    </div>
+  );
+}
+
+/** Başlıqdakı kiçik say göstəricisi. */
+export function Stat({ value, label }: { value: ReactNode; label: string }) {
+  return (
+    <div className="shrink-0 rounded-2xl bg-cream/10 px-3.5 py-1.5 text-center ring-1 ring-cream/15">
+      <div className="font-display text-xl leading-none font-semibold text-cream">{value}</div>
+      <div className="mt-0.5 text-[11px] text-cream/75">{label}</div>
     </div>
   );
 }
@@ -46,35 +73,5 @@ export function Notice({ tone = "info", children }: { tone?: "info" | "error" | 
     <div role={tone === "error" ? "alert" : "status"} className={`rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${styles[tone]}`}>
       {children}
     </div>
-  );
-}
-
-/** AI cavabı gözlənərkən: animasiya prefers-reduced-motion-da dayanır (globals.css). */
-export function Thinking({ label }: { label: string }) {
-  return (
-    <div role="status" className="flex flex-col items-center gap-3 rounded-3xl bg-sage px-6 py-10 text-center">
-      <LoaderCircle className="size-8 animate-spin text-forest-700" aria-hidden />
-      <p className="font-medium text-forest-900">{label}</p>
-      <p className="text-sm text-muted">Bu, adətən 5–20 saniyə çəkir.</p>
-    </div>
-  );
-}
-
-export function Chip({
-  active,
-  children,
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      className={`min-h-10 rounded-full px-4 text-sm font-medium transition-colors disabled:opacity-50 ${
-        active ? "bg-forest-800 text-cream" : "bg-white text-forest-800 ring-1 ring-forest-900/12 hover:ring-forest-900/30"
-      }`}
-      {...props}
-    >
-      {children}
-    </button>
   );
 }

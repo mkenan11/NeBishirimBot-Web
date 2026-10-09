@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, ApiError, type FavoriteItem } from "@/lib/api";
-import { Button, Notice, ScreenTitle } from "./ui";
+import { Button, Notice, ScreenTitle, Stat } from "./ui";
 
 export function FavoritesScreen() {
   const [items, setItems] = useState<FavoriteItem[] | null>(null);
@@ -35,7 +35,8 @@ export function FavoritesScreen() {
     <>
       <ScreenTitle
         title="Seçilmiş reseptlər"
-        subtitle={items && total ? `Cəmi: ${total} resept` : "Bəyəndiyin reseptlər burada saxlanılır."}
+        subtitle="Bəyəndiyin reseptlər burada saxlanılır — istədiyin vaxt yenidən aç."
+        aside={items && total > 0 && <Stat value={total} label="resept" />}
       />
       {error && <Notice tone="error">{error}</Notice>}
 
@@ -61,7 +62,7 @@ export function FavoritesScreen() {
               <li key={item.id}>
                 <Link
                   href={`/app/favorites/${item.id}`}
-                  className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 ring-1 ring-forest-900/10 hover:ring-forest-900/30"
+                  className="flex items-center gap-3 rounded-2xl border border-forest-900/15 bg-white px-4 py-3.5 shadow-card hover:border-forest-900/40"
                 >
                   <span className="flex-1">
                     <span className="block font-semibold text-forest-900">{item.name}</span>

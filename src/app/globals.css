@@ -12,11 +12,12 @@
   /* Kiçik mətn üçün cream fonda kifayət qədər kontrastlı narıncı. */
   --color-orange-ink: #a84a12;
 
-  --color-cream: #fbf7ef;
-  --color-beige: #f1e6d3;
-  --color-beige-200: #e7d8bf;
-  --color-sage: #e6eee3;
-  --color-sage-300: #c9d9c5;
+  /* Açıq tonlar ağ ekranlarda da bir-birindən seçilsin deyə kifayət qədər doygundur. */
+  --color-cream: #f8f1e3;
+  --color-beige: #efdfc3;
+  --color-beige-200: #e3cfac;
+  --color-sage: #dbe7d4;
+  --color-sage-300: #bcd1b4;
 
   --color-ink: #17261d;
   --color-muted: #4d5d54;
@@ -24,7 +25,9 @@
   --font-sans: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
 
-  --shadow-shot: 0 1px 2px rgb(15 36 25 / 0.08), 0 18px 40px -16px rgb(15 36 25 / 0.35);
+  --shadow-shot: 0 1px 2px rgb(15 36 25 / 0.1), 0 18px 40px -16px rgb(15 36 25 / 0.4);
+  --shadow-card: 0 1px 2px rgb(15 36 25 / 0.06), 0 8px 20px -12px rgb(15 36 25 / 0.3);
+  --shadow-phone: 0 2px 4px rgb(15 36 25 / 0.15), 0 40px 70px -24px rgb(15 36 25 / 0.55);
 }
 
 /* Base qaydaları layer daxilindədir ki, utility class-lar (məs. font-sans) onları üstələyə bilsin. */
