@@ -1,10 +1,21 @@
+/**
+ * Saytın əsas ünvanı: NEXT_PUBLIC_SITE_URL → Vercel-in production domeni → lokal.
+ * Boş dəyər də "təyin olunmayıb" sayılır (Vercel boş env-i "" kimi ötürür).
+ */
+function siteUrl() {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) return explicit.replace(/\/$/, "");
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (vercel) return `https://${vercel}`;
+  return "http://localhost:3000";
+}
+
 export const site = {
   name: "NeBishirimBot",
   title: "NeBishirimBot — Evdəki ərzaqlara uyğun reseptlər",
   description:
     "Evdə olan ərzaqları əlavə et və NeBishirimBot ilə uyğun reseptlər tap. Şəkildən ərzaq tanıma, resept təklifləri və daha çoxu.",
-  // Vercel-də NEXT_PUBLIC_SITE_URL ilə real domen təyin edilir.
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://nebishirimbot.vercel.app").replace(/\/$/, ""),
+  url: siteUrl(),
   locale: "az_AZ",
   links: {
     telegram: "https://t.me/NeBishirimBot",
