@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --color-forest-950: #0f2419;
+  --color-forest-900: #163223;
+  --color-forest-800: #1d412e;
+  --color-forest-700: #255239;
+  --color-forest-600: #2f6a49;
+
+  --color-orange-500: #e8782d;
+  --color-orange-600: #d4651c;
+  /* Kiçik mətn üçün cream fonda kifayət qədər kontrastlı narıncı. */
+  --color-orange-ink: #a84a12;
+
+  --color-cream: #fbf7ef;
+  --color-beige: #f1e6d3;
+  --color-beige-200: #e7d8bf;
+  --color-sage: #e6eee3;
+  --color-sage-300: #c9d9c5;
+
+  --color-ink: #17261d;
+  --color-muted: #4d5d54;
+
+  --font-sans: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --shadow-shot: 0 1px 2px rgb(15 36 25 / 0.08), 0 18px 40px -16px rgb(15 36 25 / 0.35);
+}
+
+/* Base qaydaları layer daxilindədir ki, utility class-lar (məs. font-sans) onları üstələyə bilsin. */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 50, "WONK" 0;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-orange-500);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
