@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUp, Camera, Check, Plus, UtensilsCrossed, X } from "lucide-react";
+import { ArrowUp, Camera, Check, UtensilsCrossed, X } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { api, ApiError, type Pantry, type PantryItem, type TextResult } from "@/lib/api";
+import { QuickAdd } from "./QuickAdd";
 import { Button, Notice, ScreenTitle, Stat } from "./ui";
 
 type Message = { tone: "info" | "error" | "success"; lines: string[] };
@@ -120,7 +121,6 @@ export function PantryScreen() {
 
   const items = pantry?.items ?? null;
   const count = items?.length ?? 0;
-  const suggestions = pantry?.suggestions ?? [];
 
   return (
     <>
@@ -167,28 +167,7 @@ export function PantryScreen() {
       </form>
       <p className="mt-2 px-4 text-xs text-muted">Vergüllə ayır — hərf səhvlərini özümüz düzəldirik.</p>
 
-      {suggestions.length > 0 && (
-        <section aria-labelledby="quick-title" className="mt-5">
-          <h2 id="quick-title" className="mb-2 font-sans text-sm font-semibold tracking-normal text-forest-900">
-            Tez əlavə et
-          </h2>
-          <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
-            {suggestions.map((name) => (
-              <li key={name} className="shrink-0">
-                <button
-                  type="button"
-                  onClick={() => quickAdd(name)}
-                  disabled={busy === `quick-${name}`}
-                  className="inline-flex min-h-9 items-center gap-1 rounded-full border border-dashed border-forest-900/30 bg-white/60 px-3 text-sm font-medium text-forest-800 transition-colors hover:border-solid hover:border-forest-800 hover:bg-white disabled:opacity-50"
-                >
-                  <Plus className="size-3.5" aria-hidden />
-                  {name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      {pantry && <QuickAdd pantry={pantry} busy={busy} onAdd={quickAdd} />}
 
       <div className="mt-4 space-y-3 empty:hidden" aria-live="polite">
         {message && (
@@ -287,7 +266,7 @@ export function PantryScreen() {
           </div>
         ) : count === 0 ? (
           <p className="mt-2 rounded-3xl border-2 border-dashed border-forest-900/25 bg-white/60 px-4 py-8 text-center text-muted">
-            Siyahın boşdur. Yuxarıda yaz, şəkil çək və ya «Tez əlavə et»-dən seç.
+            Siyahın boşdur. Yaz, şəkil çək və ya «Tez əlavə et»-dən seç.
           </p>
         ) : (
           <>

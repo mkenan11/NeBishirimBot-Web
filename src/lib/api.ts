@@ -2,7 +2,12 @@
 
 export type PantryItem = { id: number; name: string };
 /** suggestions: botun «Tez əlavə et» siyahısından hələ olmayanlar (köhnə backend-də olmaya bilər). */
-export type Pantry = { items: PantryItem[]; suggestions?: string[] };
+export type Pantry = {
+  items: PantryItem[];
+  suggestions?: string[];
+  popular?: string[];
+  suggestion_groups?: { name: string; items: string[] }[];
+};
 
 export type TextResult = Pantry & {
   added: string[];
